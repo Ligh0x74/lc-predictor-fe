@@ -45,15 +45,18 @@ import { ref, reactive, watch } from 'vue'
 
 const props = defineProps(['_pageIndex'])
 
+// 竞赛列表
 const total = ref(0)
-const pageIndex = ref(props._pageIndex == '' ? 1 : Number(props._pageIndex))
+const pageIndex = ref(Math.max(Number(props._pageIndex), 1))
 const pageSize = 10
 const contestList = reactive([])
 
 watch(
   pageIndex,
-  () => {
-    router.push(`/contest/${pageIndex.value}`)
+  (newValue, oldValue) => {
+    if (oldValue) {
+      router.push(`/contest/${pageIndex.value}`)
+    }
     reqContestList({
       pageIndex: pageIndex.value,
       pageSize,

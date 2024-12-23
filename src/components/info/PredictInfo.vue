@@ -1,5 +1,33 @@
 <template>
   <div class="layout">
+    <!-- 查询表单 -->
+    <el-form
+      ref="formRef"
+      :inline="true"
+      :model="form"
+      :rules="rules"
+      size="large"
+      style="width: 100%; display: flex; align-items: center; justify-content: center"
+    >
+      <el-form-item>
+        <el-button :icon="Back" type="primary" size="large" @click="back" />
+      </el-form-item>
+      <el-form-item prop="username">
+        <el-input v-model="form.username" style="width: 500px" placeholder="Username" clearable>
+          <template #prepend>
+            <el-form-item prop="dataRegion">
+              <el-select v-model="form.dataRegion" style="width: 150px" placeholder="Data Region">
+                <el-option label="CN" value="CN" />
+                <el-option label="US" value="US" />
+              </el-select>
+            </el-form-item>
+          </template>
+          <template #append>
+            <el-button :icon="Search" @click="submit(formRef)" />
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
     <!-- 预测列表 -->
     <el-table :data="predictList" border style="border-radius: 4px">
       <el-table-column label="排名" width="100">
@@ -49,27 +77,32 @@
 </template>
 
 <script setup lang="ts">
-import { reqPredictList } from '@/api'
+import { reqPredict, reqPredictList } from '@/api'
 import router from '@/router'
 import { ref, reactive, watch } from 'vue'
+import { Search, Back } from '@element-plus/icons-vue'
+import type { FormInstance, FormRules } from 'element-plus'
 
 const props = defineProps(['_contestName', '_pageIndex'])
 
+// 预测列表
 const total = ref(0)
-const pageIndex = ref(props._pageIndex === '' ? 1 : Number(props._pageIndex))
+const pageIndex = ref(Math.max(Number(props._pageIndex), 1))
 const pageSize = 25
-const predictList = reactive([])
+const predictList = ref([])
 
 watch(
   pageIndex,
-  () => {
-    router.push(`/predict/${props._contestName}/${pageIndex.value}`)
+  (newValue, oldValue) => {
+    if (oldValue) {
+      router.push(`/predict/${props._contestName}/${pageIndex.value}`)
+    }
     reqPredictList({
       contestName: props._contestName,
       pageIndex: pageIndex.value,
       pageSize,
     }).then((res) => {
-      Object.assign(predictList, res.data.records)
+      predictList.value = res.data.records
       total.value = res.data.total
     })
   },
@@ -86,6 +119,65 @@ const openLink = (dataRegion: string, username: string) => {
   } else {
     window.open(`https://leetcode.com/u/${username}/`, '_blank')
   }
+}
+
+// 查询表单
+interface Form {
+  contestName: string
+  dataRegion: string
+  username: string
+}
+const form = reactive<Form>({
+  contestName: props._contestName,
+  dataRegion: '',
+  username: '',
+})
+const rules = reactive<FormRules<Form>>({
+  dataRegion: [
+    {
+      required: true,
+      message: 'Please select data region',
+      trigger: 'change',
+    },
+  ],
+  username: [
+    {
+      required: true,
+      message: 'Please input username',
+      trigger: 'blur',
+    },
+  ],
+})
+const formRef = ref<FormInstance>()
+let predictListTmp: never[] | undefined
+
+const back = () => {
+  if (predictListTmp) {
+    predictList.value = JSON.parse(JSON.stringify(predictListTmp))
+    predictListTmp = undefined
+  } else {
+    router.push('/contest')
+  }
+}
+
+const submit = async (formInstance: FormInstance | undefined) => {
+  if (!formInstance) {
+    return
+  }
+  await formInstance.validate((valid) => {
+    if (valid) {
+      reqPredict(form).then((res) => {
+        predictListTmp = JSON.parse(JSON.stringify(predictList.value))
+        predictList.value.splice(0)
+        if (!res.data) {
+          total.value = 0
+        } else {
+          Object.assign(predictList.value, [res.data])
+          total.value = 1
+        }
+      })
+    }
+  })
 }
 </script>
 

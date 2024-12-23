@@ -9,3 +9,9 @@ export interface predictPage {
   pageIndex: number
   pageSize: number
 }
+
+export interface predict {
+  contestName: string
+  dataRegion: string
+  username: string
+}
