@@ -1,12 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import ContestInfo from '@/components/info/ContestInfo.vue'
+import PredictInfo from '@/components/info/PredictInfo.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: HomeView,
+      redirect: '/contest',
+    },
+    {
+      path: '/contest/:pageIndex?',
+      component: ContestInfo,
+      props: true,
+    },
+    {
+      path: '/predict/:contestName/:pageIndex?',
+      component: PredictInfo,
+      props: true,
     },
   ],
 })
