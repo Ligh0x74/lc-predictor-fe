@@ -4,7 +4,7 @@
     <el-table :data="contestList" stripe border style="border-radius: 4px">
       <el-table-column width="100">
         <template #default="scope">
-          <span style="font-weight: bolder">{{ scope.$index + 1 }}</span>
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="竞赛记录">
@@ -43,16 +43,17 @@ import { reqContestList } from '@/api'
 import router from '@/router'
 import { ref, reactive, watch } from 'vue'
 
-const props = defineProps(['pageIndex'])
+const props = defineProps(['_pageIndex'])
 
 const total = ref(0)
-const pageIndex = ref(props.pageIndex == undefined ? 1 : Number(props.pageIndex))
+const pageIndex = ref(props._pageIndex == '' ? 1 : Number(props._pageIndex))
 const pageSize = 10
 const contestList = reactive([])
 
 watch(
   pageIndex,
   () => {
+    router.push(`/contest/${pageIndex.value}`)
     reqContestList({
       pageIndex: pageIndex.value,
       pageSize,
