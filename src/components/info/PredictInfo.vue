@@ -155,8 +155,6 @@ const back = () => {
   if (predictListTmp) {
     predictList.value = JSON.parse(JSON.stringify(predictListTmp))
     predictListTmp = undefined
-  } else {
-    router.push('/contest')
   }
 }
 
