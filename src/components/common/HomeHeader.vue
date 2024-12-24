@@ -1,15 +1,116 @@
 <template>
   <div class="header">
     <el-button type="primary" text @click="home">Home</el-button>
-    <el-button type="primary" text style="position: relative; margin-left: auto">Login</el-button>
+    <!-- 登录功能 -->
+    <el-button
+      type="primary"
+      text
+      style="position: relative; margin-left: auto"
+      @click="formVisible = true"
+      v-if="!user"
+    >
+      Login
+    </el-button>
+    <el-dialog v-model="formVisible" title="Login" width="500">
+      <el-form ref="formRef" :model="form" :rules="rules" size="large">
+        <el-form-item prop="dataRegion">
+          <el-select v-model="form.dataRegion" style="width: 150px" placeholder="Data Region">
+            <el-option label="CN" value="CN" />
+            <el-option label="US" value="US" />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="username">
+          <el-input v-model="form.username" placeholder="Username" clearable> </el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div>
+          <el-button @click="formVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submit(formRef)"> Confirm </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <!-- 用户信息 -->
+    <div
+      v-if="user"
+      style="position: relative; margin-left: auto; display: flex; align-items: center"
+    >
+      <el-avatar :src="user.avatar" />
+      <span style="margin: 0 10px 0 10px; color: #ff9d14">{{ user.nickname }}</span>
+      <el-button type="primary" text @click="logout"> Logout </el-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { reqUserLogin } from '@/api'
 import router from '@/router'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { reactive, ref, type Ref } from 'vue'
 
 const home = () => {
   router.push('/contest')
+}
+
+// 登录功能
+interface User {
+  dataRegion: string
+  username: string
+  nickname: string
+  avatar: string
+}
+const json = localStorage.getItem('user')
+const user: Ref<User | null> = ref(json === null ? null : JSON.parse(json))
+
+const formVisible = ref(false)
+interface Form {
+  dataRegion: string
+  username: string
+}
+const form = reactive<Form>({
+  dataRegion: '',
+  username: '',
+})
+const rules = reactive<FormRules<Form>>({
+  dataRegion: [
+    {
+      required: true,
+      message: 'Please select data region',
+      trigger: 'change',
+    },
+  ],
+  username: [
+    {
+      required: true,
+      message: 'Please input username',
+      trigger: 'blur',
+    },
+  ],
+})
+const formRef = ref<FormInstance>()
+
+const submit = async (formInstance: FormInstance | undefined) => {
+  if (!formInstance) {
+    return
+  }
+  await formInstance.validate((valid) => {
+    if (valid) {
+      reqUserLogin(form).then((res) => {
+        if (!res.data) {
+          ElMessage.error('Login Failed')
+        } else {
+          user.value = res.data
+          localStorage.setItem('user', JSON.stringify(res.data))
+          formVisible.value = false
+        }
+      })
+    }
+  })
+}
+
+const logout = () => {
+  localStorage.removeItem('user')
+  user.value = null
 }
 </script>
 

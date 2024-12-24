@@ -15,3 +15,8 @@ export interface predict {
   dataRegion: string
   username: string
 }
+
+export interface userLogin {
+  dataRegion: string
+  username: string
+}

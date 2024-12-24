@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { contestPage, predictPage, predict } from './type'
+import type { contestPage, predictPage, predict, userLogin } from './type'
 
 // 接口管理
 export const reqContestList = (params: contestPage) => {
@@ -21,5 +21,12 @@ export const reqPredict = (params: predict) => {
     url: '/predict',
     method: 'get',
     params,
+  })
+}
+
+export const reqUserLogin = (params: userLogin) => {
+  return request({
+    url: `/user/login/${params.dataRegion}/${params.username}`,
+    method: 'post',
   })
 }
