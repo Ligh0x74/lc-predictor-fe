@@ -12,6 +12,9 @@
       <el-form-item>
         <el-button :icon="Back" type="primary" size="large" @click="back" />
       </el-form-item>
+      <el-form-item label="Favs">
+        <el-switch v-model="favs" />
+      </el-form-item>
       <el-form-item prop="username">
         <el-input v-model="form.username" style="width: 500px" placeholder="Username" clearable>
           <template #prepend>
@@ -79,7 +82,7 @@
 <script setup lang="ts">
 import { reqPredict, reqPredictList } from '@/api'
 import router from '@/router'
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, type Ref } from 'vue'
 import { Search, Back } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -122,6 +125,7 @@ const openLink = (dataRegion: string, username: string) => {
 }
 
 // 查询表单
+const favs: Ref<boolean> = ref(false)
 interface Form {
   contestName: string
   dataRegion: string

@@ -43,25 +43,18 @@
 </template>
 
 <script setup lang="ts">
-import { reqUserLogin } from '@/api'
+import { reqUserLogin, reqUserLogout } from '@/api'
 import router from '@/router'
+import { useUserStore } from '@/stores/user'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { reactive, ref, type Ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 const home = () => {
   router.push('/contest')
 }
 
 // 登录功能
-interface User {
-  dataRegion: string
-  username: string
-  nickname: string
-  avatar: string
-}
-const json = localStorage.getItem('user')
-const user: Ref<User | null> = ref(json === null ? null : JSON.parse(json))
-
+const user = useUserStore().getUser()
 const formVisible = ref(false)
 interface Form {
   dataRegion: string
@@ -109,8 +102,9 @@ const submit = async (formInstance: FormInstance | undefined) => {
 }
 
 const logout = () => {
+  reqUserLogout()
   localStorage.removeItem('user')
-  user.value = null
+  user.value = undefined
 }
 </script>
 

@@ -30,3 +30,10 @@ export const reqUserLogin = (params: userLogin) => {
     method: 'post',
   })
 }
+
+export const reqUserLogout = () => {
+  return request({
+    url: `/user/logout`,
+    method: 'post',
+  })
+}
