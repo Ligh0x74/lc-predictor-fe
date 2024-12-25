@@ -10,12 +10,12 @@ const router = createRouter({
       redirect: '/contest',
     },
     {
-      path: '/contest/:_pageIndex?',
+      path: '/contest',
       component: ContestInfo,
       props: true,
     },
     {
-      path: '/predict/:_contestName/:_pageIndex?',
+      path: '/predict/:_contestName',
       component: PredictInfo,
       props: true,
     },

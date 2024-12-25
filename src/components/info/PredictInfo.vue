@@ -12,9 +12,6 @@
       <el-form-item>
         <el-button :icon="Back" type="primary" size="large" @click="back" />
       </el-form-item>
-      <el-form-item label="Favs">
-        <el-switch v-model="favs" />
-      </el-form-item>
       <el-form-item prop="username">
         <el-input v-model="form.username" style="width: 500px" placeholder="Username" clearable>
           <template #prepend>
@@ -29,6 +26,10 @@
             <el-button :icon="Search" @click="submit(formRef)" />
           </template>
         </el-input>
+      </el-form-item>
+      <!-- 关注功能 -->
+      <el-form-item label="Favs">
+        <el-switch v-model="favs" />
       </el-form-item>
     </el-form>
     <!-- 预测列表 -->
@@ -80,27 +81,24 @@
 </template>
 
 <script setup lang="ts">
-import { reqPredict, reqPredictList } from '@/api'
-import router from '@/router'
+import { reqFollowPredictList, reqPredict, reqPredictList } from '@/api'
 import { ref, reactive, watch, type Ref } from 'vue'
 import { Search, Back } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
-const props = defineProps(['_contestName', '_pageIndex'])
+const props = defineProps(['_contestName'])
 
-// 预测列表
+// 预测列表, 关注功能
 const total = ref(0)
-const pageIndex = ref(Math.max(Number(props._pageIndex), 1))
+const pageIndex = ref(1)
 const pageSize = 25
 const predictList = ref([])
+const favs: Ref<boolean> = ref(false)
 
-watch(
-  pageIndex,
-  (newValue, oldValue) => {
-    if (oldValue) {
-      router.push(`/predict/${props._contestName}/${pageIndex.value}`)
-    }
-    reqPredictList({
+const req = () => {
+  // 显示关注用户
+  if (favs.value) {
+    reqFollowPredictList({
       contestName: props._contestName,
       pageIndex: pageIndex.value,
       pageSize,
@@ -108,6 +106,30 @@ watch(
       predictList.value = res.data.records
       total.value = res.data.total
     })
+    return
+  }
+  // 显示全部用户
+  reqPredictList({
+    contestName: props._contestName,
+    pageIndex: pageIndex.value,
+    pageSize,
+  }).then((res) => {
+    predictList.value = res.data.records
+    total.value = res.data.total
+  })
+}
+
+watch(favs, () => {
+  if (pageIndex.value === 1) {
+    req()
+  }
+  pageIndex.value = 1
+})
+
+watch(
+  pageIndex,
+  () => {
+    req()
   },
   { immediate: true },
 )
@@ -125,7 +147,6 @@ const openLink = (dataRegion: string, username: string) => {
 }
 
 // 查询表单
-const favs: Ref<boolean> = ref(false)
 interface Form {
   contestName: string
   dataRegion: string

@@ -37,3 +37,10 @@ export const reqUserLogout = () => {
     method: 'post',
   })
 }
+
+export const reqFollowPredictList = (params: predictPage) => {
+  return request({
+    url: `/follow/${params.contestName}/${params.pageIndex}/${params.pageSize}`,
+    method: 'get',
+  })
+}
