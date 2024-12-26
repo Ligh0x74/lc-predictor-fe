@@ -20,3 +20,9 @@ export interface userLogin {
   dataRegion: string
   username: string
 }
+
+export interface follow {
+  dataRegion: string
+  username: string
+  isFollow: boolean
+}

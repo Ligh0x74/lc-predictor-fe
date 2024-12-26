@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { contestPage, predictPage, predict, userLogin } from './type'
+import type { contestPage, predictPage, predict, userLogin, follow } from './type'
 
 // 接口管理
 export const reqContestList = (params: contestPage) => {
@@ -42,5 +42,12 @@ export const reqFollowPredictList = (params: predictPage) => {
   return request({
     url: `/follow/${params.contestName}/${params.pageIndex}/${params.pageSize}`,
     method: 'get',
+  })
+}
+
+export const reqFollow = (params: follow) => {
+  return request({
+    url: `/follow/${params.dataRegion}/${params.username}/${params.isFollow}`,
+    method: 'post',
   })
 }
