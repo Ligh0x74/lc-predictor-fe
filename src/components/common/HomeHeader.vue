@@ -1,6 +1,12 @@
 <template>
   <div class="header">
     <el-button type="primary" text @click="home">Home</el-button>
+    <el-text
+      size="large"
+      style="position: absolute; left: 0; right: 0; text-align: center; color: #ff9d14"
+    >
+      LeetCode Predictor 🔥
+    </el-text>
     <!-- 登录功能 -->
     <el-button
       type="primary"
