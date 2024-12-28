@@ -3,7 +3,7 @@
     <el-button type="primary" text @click="home">Home</el-button>
     <el-text
       size="large"
-      style="position: absolute; left: 0; right: 0; text-align: center; color: #ff9d14"
+      style="position: absolute; left: 0; right: 0; text-align: center; color: #ff9d14; z-index: -1"
     >
       LeetCode Predictor 🔥
     </el-text>

@@ -36,7 +36,7 @@
     <el-table :data="predictList" border style="border-radius: 4px">
       <el-table-column label="排名" width="100">
         <template #default="scope">
-          {{ '#' + scope.row.rank }}
+          {{ '#' + scope.row.ranking }}
         </template>
       </el-table-column>
       <el-table-column label="昵称">
@@ -223,10 +223,13 @@ const rules = reactive<FormRules<Form>>({
   ],
 })
 const formRef = ref<FormInstance>()
+
+let totalTmp: number
 let predictListTmp: never[] | undefined
 
 const back = () => {
   if (predictListTmp) {
+    total.value = totalTmp
     predictList.value = JSON.parse(JSON.stringify(predictListTmp))
     predictListTmp = undefined
   }
@@ -239,6 +242,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
   await formInstance.validate((valid) => {
     if (valid) {
       reqPredict(form).then((res) => {
+        totalTmp = total.value
         predictListTmp = JSON.parse(JSON.stringify(predictList.value))
         predictList.value.splice(0)
         if (!res.data) {
