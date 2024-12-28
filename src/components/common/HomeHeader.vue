@@ -1,6 +1,13 @@
 <template>
   <div class="header">
     <el-button type="primary" text @click="home">Home</el-button>
+    <el-switch
+      v-model="isDark"
+      :active-action-icon="Moon"
+      :inactive-action-icon="Sunny"
+      style="--el-switch-on-color: #39393a; --el-switch-off-color: #cfd3dc; margin-left: 10px"
+      :change="dark()"
+    />
     <el-text
       size="large"
       style="position: absolute; left: 0; right: 0; text-align: center; color: #ff9d14; z-index: -1"
@@ -54,9 +61,18 @@ import router from '@/router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { reactive, ref } from 'vue'
+import { Moon, Sunny } from '@element-plus/icons-vue'
 
 const home = () => {
   router.push('/contest')
+}
+
+// 暗黑模式
+const isDark = ref(JSON.parse(localStorage.getItem('isDark') || 'true'))
+const dark = () => {
+  const html = document.documentElement
+  html.className = isDark.value ? 'dark' : ''
+  localStorage.setItem('isDark', JSON.stringify(isDark.value))
 }
 
 // 登录功能
