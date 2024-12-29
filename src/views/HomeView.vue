@@ -17,7 +17,6 @@ import HomeFooter from '@/components/common/HomeFooter.vue'
 
 <style scoped>
 .layout {
-  min-height: 100vh;
   display: flex;
 }
 </style>
