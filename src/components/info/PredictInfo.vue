@@ -223,15 +223,12 @@ const rules = reactive<FormRules<Form>>({
   ],
 })
 const formRef = ref<FormInstance>()
-
-let totalTmp: number
-let predictListTmp: never[] | undefined
+let isQuery = false
 
 const back = () => {
-  if (predictListTmp) {
-    total.value = totalTmp
-    predictList.value = JSON.parse(JSON.stringify(predictListTmp))
-    predictListTmp = undefined
+  if (isQuery) {
+    req()
+    isQuery = false
   }
 }
 
@@ -242,14 +239,13 @@ const submit = async (formInstance: FormInstance | undefined) => {
   await formInstance.validate((valid) => {
     if (valid) {
       reqPredict(form).then((res) => {
-        totalTmp = total.value
-        predictListTmp = JSON.parse(JSON.stringify(predictList.value))
         predictList.value.splice(0)
         if (!res.data) {
           total.value = 0
         } else {
           Object.assign(predictList.value, [res.data])
           total.value = 1
+          isQuery = true
         }
       })
     }
