@@ -39,7 +39,9 @@
       <template #footer>
         <div>
           <el-button @click="formVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="submit(formRef)"> Confirm </el-button>
+          <el-button type="primary" @click="submit(formRef)" :loading="loading">
+            Confirm
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -103,6 +105,7 @@ const rules = reactive<FormRules<Form>>({
   ],
 })
 const formRef = ref<FormInstance>()
+const loading = ref(false)
 
 const submit = async (formInstance: FormInstance | undefined) => {
   if (!formInstance) {
@@ -110,15 +113,20 @@ const submit = async (formInstance: FormInstance | undefined) => {
   }
   await formInstance.validate((valid) => {
     if (valid) {
-      reqUserLogin(form).then((res) => {
-        if (!res.data) {
-          ElMessage.error('Login Failed')
-        } else {
+      // 至少等待 1s 才能重试
+      loading.value = true
+      setTimeout(() => {
+        loading.value = false
+      }, 1000)
+      reqUserLogin(form)
+        .then((res) => {
           user.value = res.data
           localStorage.setItem('user', JSON.stringify(res.data))
           formVisible.value = false
-        }
-      })
+        })
+        .catch(() => {
+          ElMessage.error('Login Failed')
+        })
     }
   })
 }
