@@ -19,6 +19,13 @@
           {{ new Date(scope.row.startTime).toLocaleString() }}
         </template>
       </el-table-column>
+      <el-table-column label="预测时间">
+        <template #default="scope">
+          {{
+            scope.row.predictTime === null ? '-' : new Date(scope.row.predictTime).toLocaleString()
+          }}
+        </template>
+      </el-table-column>
       <el-table-column label="LCCN LINK">
         <template #default="scope">
           <el-button type="primary" link @click="openLink(scope.row.contestName)">
