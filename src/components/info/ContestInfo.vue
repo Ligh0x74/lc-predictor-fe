@@ -48,13 +48,13 @@
 <script setup lang="ts">
 import { reqContestList } from '@/api'
 import router from '@/router'
-import { ref, reactive, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 // 竞赛列表
 const total = ref(0)
 const pageIndex = ref(1)
 const pageSize = 10
-const contestList = reactive([])
+const contestList = ref([])
 
 watch(
   pageIndex,
@@ -63,7 +63,7 @@ watch(
       pageIndex: pageIndex.value,
       pageSize,
     }).then((res) => {
-      Object.assign(contestList, res.data.records)
+      contestList.value = res.data.records
       total.value = res.data.total
     })
   },
